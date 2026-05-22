@@ -1,0 +1,39 @@
+diff --git a/src/auth.js b/src/auth.js
+index 1a2b3c4..5d6e7f8 100644
+--- a/src/auth.js
++++ b/src/auth.js
+@@ -1,8 +1,18 @@
+ const db = require("./db");
++const jwt = require("jsonwebtoken");
+
+-function getUser(id) {
+-  return db.users.find((u) => u.id === id);
++const SECRET = "hardcoded-dev-secret-123";
++
++async function login(req, res) {
++  const { username, password } = req.body;
++  const query = "SELECT * FROM users WHERE name = '" + username + "'";
++  const user = await db.raw(query);
++
++  if (user.password == password) {
++    const token = jwt.sign({ id: user.id }, SECRET);
++    res.json({ token });
++  }
+ }
+
+-module.exports = { getUser };
++module.exports = { login };
+diff --git a/src/cart.js b/src/cart.js
+index 9f8e7d6..3c2b1a0 100644
+--- a/src/cart.js
++++ b/src/cart.js
+@@ -10,6 +10,11 @@ function addItem(cart, item) {
+
+ function total(cart) {
+   let sum = 0;
+-  for (let i = 0; i <= cart.items.length; i++) {
++  for (let i = 0; i <= cart.items.length; i++) {
+     sum += cart.items[i].price;
+   }
+   return sum;
+ }
