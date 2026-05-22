@@ -25,7 +25,7 @@ samples/example.diff     # demo diff with planted bugs
 ## Setup
 
 ```bash
-npm install
+pnpm install
 cp .env.example .env
 ```
 
@@ -34,14 +34,14 @@ cp .env.example .env
 ```bash
 ollama serve                       # start the server
 ollama pull qwen2.5-coder:7b       # a small code-tuned model
-npm run review                     # reviews samples/example.diff
-npm run review path/to/your.diff   # or your own diff
+pnpm review                        # reviews samples/example.diff
+pnpm review path/to/your.diff      # or your own diff
 ```
 
 Generate a real diff to feed it:
 
 ```bash
-git diff main > /tmp/pr.diff && npm run review /tmp/pr.diff
+git diff main > /tmp/pr.diff && pnpm review /tmp/pr.diff
 ```
 
 ### Switch to a hosted API (no code changes)

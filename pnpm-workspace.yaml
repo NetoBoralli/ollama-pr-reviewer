@@ -1,0 +1,4 @@
+# pnpm 11+ reads build-script approvals here (no longer from package.json).
+# tsx relies on esbuild, whose install build step we explicitly allow.
+allowBuilds:
+  esbuild: true
