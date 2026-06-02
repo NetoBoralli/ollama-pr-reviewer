@@ -1,0 +1,17 @@
+{
+  "enabled": true,
+  "maxDiffLines": 800,
+  "severityThreshold": "suggestion",
+  "ignoreGlobs": [
+    "package-lock.json",
+    "pnpm-lock.yaml",
+    "yarn.lock",
+    "*.lock",
+    "dist/*",
+    "build/*",
+    "*.generated.*",
+    "*.min.js",
+    "*.min.css"
+  ],
+  "promptAddendum": "This project uses TypeScript strict mode and Vitest for tests. Prefer `unknown` over `any`. Never use `// eslint-disable` without a justifying comment."
+}

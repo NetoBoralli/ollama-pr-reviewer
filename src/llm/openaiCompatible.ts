@@ -1,4 +1,8 @@
 import OpenAI from "openai";
+import type {
+  ChatCompletionMessageParam,
+  ChatCompletionCreateParamsNonStreaming,
+} from "openai/resources/chat/completions";
 import type { ChatMessage, ChatOptions, LLMProvider } from "./types.js";
 
 export interface OpenAICompatibleConfig {
@@ -14,8 +18,8 @@ export interface OpenAICompatibleConfig {
 
 /**
  * Works against ANY server that implements the OpenAI /v1/chat/completions
- * API — which includes Ollama, vLLM, TGI, OpenAI, OpenRouter, Together, etc.
- * Switching providers is purely a matter of baseURL + model + key.
+ * API — Ollama, vLLM, TGI, OpenAI, OpenRouter, Together, Groq, etc.
+ * Switching is purely a matter of baseURL + model + key.
  */
 export class OpenAICompatibleProvider implements LLMProvider {
   readonly name: string;
@@ -33,13 +37,29 @@ export class OpenAICompatibleProvider implements LLMProvider {
   }
 
   async chat(messages: ChatMessage[], options: ChatOptions = {}): Promise<string> {
-    const res = await this.client.chat.completions.create({
+    const fullMessages: ChatCompletionMessageParam[] = [];
+    if (options.system) {
+      fullMessages.push({ role: "system", content: options.system });
+    }
+    for (const m of messages) {
+      fullMessages.push({ role: m.role, content: m.content });
+    }
+
+    const params: ChatCompletionCreateParamsNonStreaming = {
       model: this.model,
-      messages,
+      messages: fullMessages,
       temperature: options.temperature ?? 0.2,
       max_tokens: options.maxTokens,
-    });
+    };
 
+    if (options.jsonMode) {
+      // Supported by OpenAI, Ollama (>=0.5), vLLM, OpenRouter on most models.
+      // Models without native JSON mode usually still respect the schema in
+      // the system prompt; we parse + validate downstream.
+      params.response_format = { type: "json_object" };
+    }
+
+    const res = await this.client.chat.completions.create(params);
     const content = res.choices[0]?.message?.content;
     if (!content) {
       throw new Error(`[${this.name}] model returned an empty response`);

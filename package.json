@@ -1,14 +1,20 @@
 {
   "name": "ollama-pr-reviewer",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "PR review via a swappable LLM backend (Ollama locally, any OpenAI-compatible API in prod)",
+  "description": "PR review via a swappable LLM backend (Ollama locally, OpenAI-compatible, or Anthropic in CI)",
   "type": "module",
+  "bin": {
+    "pr-review": "src/index.ts"
+  },
   "scripts": {
     "review": "tsx src/index.ts",
+    "review:staged": "tsx src/index.ts staged",
+    "review:push": "tsx src/index.ts push",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.100.1",
     "dotenv": "^16.4.5",
     "openai": "^4.67.0"
   },
